@@ -6,6 +6,6 @@ import lombok.Getter;
 @AllArgsConstructor
 @Getter
 public class RequestShiftDTO {
-    private int lowestShiftValue;
-    private int highestShiftValue;
+    private String privateCode;
+    private String nameOfStall;
 }

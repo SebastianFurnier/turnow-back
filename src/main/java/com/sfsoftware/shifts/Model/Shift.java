@@ -79,6 +79,6 @@ public class Shift {
     }
 
     public ResponseShiftDTO toDTO() {
-        return new ResponseShiftDTO(currentShiftNumber, privateCode, lowestNumberOfShift, highestNumberOfShift);
+        return new ResponseShiftDTO(currentShiftNumber, privateCode, lowestNumberOfShift, highestNumberOfShift, "");
     }
 }

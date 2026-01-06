@@ -1,5 +1,6 @@
 package com.sfsoftware.shifts.Service;
 
+import com.sfsoftware.shifts.DTO.RequestShiftDTO;
 import com.sfsoftware.shifts.DTO.SetNumberRequestDTO;
 import com.sfsoftware.shifts.Model.Shift;
 import com.sfsoftware.shifts.DTO.ResponseShiftDTO;
@@ -64,6 +65,24 @@ public class ShiftService {
         Shift shift = shiftRepository.findByPrivateCode(privateCode);
 
         return shift.toDTO();
+    }
+
+    public ResponseShiftDTO callNext(RequestShiftDTO requestShiftDTO) {
+        String privateCode = requestShiftDTO.getPrivateCode();
+        Shift shift = shiftRepository.findByPrivateCode(privateCode);
+
+        ResponseShiftDTO responseShiftDTO = shift.toDTO();
+
+        responseShiftDTO.setNameOfStall(requestShiftDTO.getNameOfStall());
+
+        responseShiftDTO.callNextShift();
+
+        messagingTemplate.convertAndSend(
+                "/topic/shifts/" + privateCode,
+                responseShiftDTO
+        );
+
+        return responseShiftDTO;
     }
 }
 

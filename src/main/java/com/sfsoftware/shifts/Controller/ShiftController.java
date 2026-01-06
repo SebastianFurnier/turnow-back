@@ -31,6 +31,13 @@ public class ShiftController {
         return createSuccessResponse(responseShiftDTO);
     }
 
+    @PutMapping("/call")
+    public ResponseEntity<Map<String, ResponseShiftDTO>> callNextShift(@RequestBody RequestShiftDTO request) {
+        ResponseShiftDTO responseShiftDTO = shiftService.callNext(request);
+
+        return createSuccessResponse(responseShiftDTO);
+    }
+
     @PutMapping("/edit")
     public ResponseEntity<Map<String, ResponseShiftDTO>> setCurrentNumber(
             @RequestBody SetNumberRequestDTO numberRequestDTO) {
