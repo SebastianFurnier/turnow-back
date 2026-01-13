@@ -1,5 +1,6 @@
 package com.sfsoftware.shifts.Controller;
 
+import com.sfsoftware.shifts.DTO.RequestDeleteBlockedTicketDTO;
 import com.sfsoftware.shifts.DTO.RequestShiftDTO;
 import com.sfsoftware.shifts.DTO.ResponseTicketDTO;
 import com.sfsoftware.shifts.DTO.SetNumberRequestDTO;
@@ -36,6 +37,24 @@ public class TicketController {
         ResponseTicketDTO responseTicketDTO = ticketService.servedTicket(request);
 
         return createSuccessResponse(responseTicketDTO);
+    }
+
+    @DeleteMapping("/delete")
+    public ResponseEntity<Map<String,String>> deleteServedTicket(
+            @RequestBody RequestDeleteBlockedTicketDTO requestDeleteBlockedTicketDTO) {
+        boolean deletedSuccesfully = ticketService.deleteServedTicket(requestDeleteBlockedTicketDTO);
+
+        if (deletedSuccesfully) {
+            Map<String, String> response = new HashMap<>();
+            response.put("response", "succes");
+
+            return ResponseEntity.ok(response);
+
+        }
+
+        Map<String, String> errorResponse = new HashMap<>();
+        errorResponse.put("error", "El ticket no pudo ser borrado");
+        return ResponseEntity.badRequest().body(errorResponse);
     }
 
     @PutMapping("/edit")

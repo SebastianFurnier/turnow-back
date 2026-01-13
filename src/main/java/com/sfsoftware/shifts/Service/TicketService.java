@@ -1,5 +1,6 @@
 package com.sfsoftware.shifts.Service;
 
+import com.sfsoftware.shifts.DTO.RequestDeleteBlockedTicketDTO;
 import com.sfsoftware.shifts.DTO.RequestShiftDTO;
 import com.sfsoftware.shifts.DTO.SetNumberRequestDTO;
 import com.sfsoftware.shifts.Model.BlockedTicket;
@@ -89,8 +90,6 @@ public class TicketService {
     @Transactional
     public ResponseTicketDTO servedTicket(RequestShiftDTO requestShiftDTO) {
 
-        System.out.println(requestShiftDTO.getTicketId());
-
         String privateCode = requestShiftDTO.getPrivateCode();
         TicketQueue ticketQueue = ticketQueueRepository.findByPrivateCode(privateCode);
 
@@ -108,6 +107,32 @@ public class TicketService {
         );
 
         return responseTicketDTO;
+    }
+
+    @Transactional
+    public boolean deleteServedTicket(RequestDeleteBlockedTicketDTO requestDeleteBlockedTicketDTO) {
+        UUID idRequest = requestDeleteBlockedTicketDTO.getId();
+        String privateCode = requestDeleteBlockedTicketDTO.getPrivateCode();
+        TicketQueue ticketQueue = ticketQueueRepository.findByPrivateCode(privateCode);
+
+        Optional<BlockedTicket> blockedTicket = blockedTicketRepository.findById(idRequest);
+
+        if (blockedTicket.isPresent()) {
+            blockedTicketRepository.delete(blockedTicket.get());
+
+            List<BlockedTicket> blockedTicketList = blockedTicketRepository.findAllByQueuePrivateCode(privateCode);
+
+            ResponseTicketDTO responseTicketDTO = ticketQueue.toDTO(blockedTicketList);
+
+            messagingTemplate.convertAndSend(
+                    "/topic/shifts/" + privateCode,
+                    responseTicketDTO
+            );
+
+            return true;
+        }
+
+        return false;
     }
 }
 
