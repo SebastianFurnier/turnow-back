@@ -47,6 +47,10 @@ public class RateLimitInterceptor implements HandlerInterceptor {
 
         Bucket bucket = null;
 
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            return true;
+        }
+
         if (path.equals("/new")) {
             bucket = resolveBucket(ip, "new", 10);
         } else if (path.equals("/call")) {
